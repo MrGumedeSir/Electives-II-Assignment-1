@@ -1,0 +1,239 @@
+{% extends 'fitbuddy/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+<!-- 
+* This file contains the specific content for the user's dashboard.
+* It extends the `base.html` template, which provides the common header, navigation, and footer.
+* The content within the `{% block content %}` tags will be placed into the main section of the base template.
+-->
+
+{% block content %}
+    <!-- 
+    * Main Dashboard Container.
+    * `max-w-4xl` sets a maximum width for readability on large screens.
+    * `md:p-8 p-4` ensures padding is responsive for all device sizes.
+    -->
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden md:p-8 p-4">
+
+        <!-- 
+        * Header section for the dashboard.
+        * `flex flex-col md:flex-row` makes the layout responsive, stacking on mobile and side-by-side on larger screens.
+        -->
+        <header class="flex flex-col md:flex-row items-center justify-between pb-4 border-b-2 border-gray-200 mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2 md:mb-0">Welcome Back, {{ user.first_name }}!</h1>
+            <div class="flex items-center space-x-4">
+                <img src="https://placehold.co/60x60/4c51bf/ffffff?text=U" alt="User Profile" class="h-12 w-12 rounded-full shadow-lg border-2 border-indigo-500">
+                <span class="text-lg font-medium text-gray-700">{{ user.username }}</span>
+            </div>
+        </header>
+
+        <!-- 
+        * Main content grid.
+        * `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3` creates a responsive grid layout.
+        -->
+        <main id="main-content" role="main"  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- Confirmed Workouts Section -->
+            <section class="bg-indigo-500 text-white p-6 rounded-xl shadow-lg flex flex-col justify-between transform transition duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold">Confirmed Workouts</h2>
+                    <i class="fas fa-dumbbell text-3xl opacity-75"></i>
+                </div>
+                <!-- This section is now populated with real data from the Django view -->
+                <div id="workouts-list">
+                    {% if confirmed_week %}
+                        {% for booking in confirmed_week %}
+                            <p class="text-gray-200 mt-1">{{ booking.session.activity.title }} on {{ booking.session.start_time|date:"D, M d" }}</p>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-gray-200">No confirmed workouts this week.</p>
+                    {% endif %}
+                </div>
+                <img src="https://placehold.co/200x120/4f46e5/ffffff?text=Workout+Image" alt="Workout" class="mt-4 rounded-lg">
+            </section>
+
+            <!-- Today's Hydration Section -->
+            <section class="bg-blue-500 text-white p-6 rounded-xl shadow-lg flex flex-col justify-between transform transition duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold">Today's Hydration</h2>
+                    <i class="fas fa-tint text-3xl opacity-75"></i>
+                </div>
+                <!-- JavaScript will dynamically update this section -->
+                <div id="hydration-display" class="mb-4 flex items-center space-x-2">
+                    <!-- Placeholder icons will be replaced by JS -->
+                    {% for _ in hydration_today %}
+                        <i class="fas fa-glass-water-full text-2xl text-white"></i>
+                    {% empty %}
+                        <i class="fas fa-glass-water-full text-2xl text-white opacity-50"></i>
+                    {% endfor %}
+                </div>
+                <button id="log-water-btn" class="bg-white text-blue-500 font-bold py-2 px-4 rounded-full shadow-md hover:bg-gray-100 transition">
+                    <i class="fas fa-plus mr-2"></i>Add 250ml
+                </button>
+            </section>
+
+            <!-- Log New Activity Section -->
+            <section class="lg:col-span-2 bg-gray-200 p-6 rounded-xl shadow-lg transform transition duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold text-gray-900">Log New Activity</h2>
+                    <i class="fas fa-plus-circle text-3xl text-gray-600"></i>
+                </div>
+                <form id="activity-log-form" class="space-y-4">
+                    {% csrf_token %}
+                    <input type="text" id="id_title" name="title" aria-label="Activity title" placeholder="Activity Title (e.g., Running)" class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                    <input type="number" id="id_duration_minutes" name="duration_minutes" aria-label="Duration in minutes" placeholder="Duration (minutes)" class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" min="1" required>
+                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition">
+                        <i class="fas fa-arrow-right mr-2"></i>Log Activity
+                    </button>
+                </form>
+            </section>
+
+            <!-- Recent Activity Logs Section -->
+            <section class="bg-gray-800 text-white p-6 rounded-xl shadow-lg lg:col-span-1 transform transition duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold">Recent Activity Logs</h2>
+                    <i class="fas fa-clock-rotate-left text-3xl opacity-75"></i>
+                </div>
+                <!-- This list is now populated with real data from the Django view -->
+                <ul id="activity-logs-list" class="space-y-2">
+                    {% for log in activity_logs %}
+                        <li class="bg-gray-700 p-3 rounded-lg">{{ log.title }} for {{ log.duration_minutes }} minutes</li>
+                    {% empty %}
+                        <li class="bg-gray-700 p-3 rounded-lg">No recent activities.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+        // The __app_id is provided by the canvas environment.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // --- Water Logging Logic ---
+        document.getElementById('log-water-btn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('{% url "fitbuddy:log_water" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: 'amount_ml=250'
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.status === 'ok') {
+                        // A simple, local visual update for demonstration.
+                        // In a real app, you would fetch the full hydration data from the server.
+                        const hydrationDisplay = document.getElementById('hydration-display');
+                        const newGlass = document.createElement('i');
+                        newGlass.className = 'fas fa-glass-water-full text-2xl text-white';
+                        const opacityIcons = hydrationDisplay.querySelectorAll('.opacity-50');
+                        if (opacityIcons.length > 0) {
+                            opacityIcons[0].classList.remove('opacity-50');
+                        } else {
+                           // If all glasses are full, add a new one.
+                           hydrationDisplay.appendChild(newGlass);
+                        }
+                    }
+                } else {
+                    console.error('Server error logging water:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error logging water:', error);
+            }
+        });
+
+        // --- Activity Logging Logic ---
+        document.getElementById('activity-log-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = new URLSearchParams(formData).toString();
+
+            try {
+                const response = await fetch('{% url "fitbuddy:log_activity" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: data
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.status === 'ok') {
+                        // Create and add a new log item to the list
+                        const newLogItem = document.createElement('li');
+                        newLogItem.className = 'bg-gray-700 p-3 rounded-lg';
+                        newLogItem.innerHTML = `<span class="font-bold">${result.title}</span> for ${result.duration} minutes`;
+                        
+                        const logsList = document.getElementById('activity-logs-list');
+                        logsList.prepend(newLogItem);
+                        
+                        // Remove placeholder if it exists
+                        const placeholder = logsList.querySelector('li');
+                        if (placeholder && placeholder.innerText.includes('No recent activities')) {
+                            placeholder.remove();
+                        }
+                        
+                        form.reset();
+                    }
+                } else {
+                    console.error('Server error logging activity:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error logging activity:', error);
+            }
+        });
+
+        // --- Helper function to get CSRF token from cookies ---
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Your Dashboard</h1>
+    </header>
+    <main id="main-content" role="main" >
+        <section>
+            <h2>Your Activities</h2>
+            <ul id="activity-logs-list">
+                <li>No recent activities</li>
+            </ul>
+        </section>
+    </main>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html> 

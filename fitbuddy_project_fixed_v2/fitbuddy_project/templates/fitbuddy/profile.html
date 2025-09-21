@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+
+    <!-- Main Content Container -->
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden md:p-8 p-4 mt-6">
+
+        <!-- Profile Header -->
+        <header class="flex flex-col sm:flex-row items-center sm:items-start justify-between pb-6 border-b border-gray-200">
+            <div class="flex items-center space-x-4">
+                <div class="w-24 h-24 rounded-full overflow-hidden shadow-lg bg-indigo-200 flex items-center justify-center text-4xl font-bold text-indigo-600">
+                    <span id="initials">JD</span>
+                </div>
+                <div>
+                    <h1 id="user-full-name" class="text-3xl font-bold text-gray-900">John Doe</h1>
+                    <p id="user-username" class="text-gray-600 mt-1">@johndoe</p>
+                </div>
+            </div>
+            <a href="#" class="mt-4 sm:mt-0 bg-indigo-600 text-white font-bold py-2 px-6 rounded-full shadow-md hover:bg-indigo-700 transition transform hover:scale-105">
+                Edit Profile
+            </a>
+        </header>
+
+        <!-- Profile Details Section -->
+        <section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Contact and Personal Information -->
+            <div class="bg-gray-50 p-6 rounded-xl shadow-inner">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Personal Information</h2>
+                <div class="space-y-3 text-gray-700">
+                    <p><span class="font-medium text-gray-900">Email:</span> <span id="user-email">john.doe@example.com</span></p>
+                    <p><span class="font-medium text-gray-900">First Name:</span> <span id="user-first-name">John</span></p>
+                    <p><span class="font-medium text-gray-900">Last Name:</span> <span id="user-last-name">Doe</span></p>
+                </div>
+            </div>
+
+            <!-- Recent Activity Log -->
+            <div class="bg-gray-50 p-6 rounded-xl shadow-inner">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Recent Activity</h2>
+                <ul id="activity-log" class="space-y-3">
+                    <!-- Activities will be dynamically loaded here -->
+                </ul>
+                <a href="/dashboard/" class="block mt-4 text-center text-indigo-600 font-medium hover:text-indigo-500 transition">
+                    View all logs &rarr;
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript to populate the profile data -->
+    <script>
+        // Placeholder data to simulate Django context
+        // In your Django template, you would replace this with actual context data.
+        const userData = {
+            username: 'johndoe',
+            email: 'john.doe@example.com',
+            first_name: 'John',
+            last_name: 'Doe'
+        };
+
+        const recentActivities = [
+            { title: 'Morning Run', duration: 45 },
+            { title: 'Yoga Session', duration: 60 },
+            { title: 'Weightlifting', duration: 90 },
+            { title: 'Cycling', duration: 30 }
+        ];
+
+        // Populate user data
+        document.getElementById('user-full-name').textContent = `${userData.first_name} ${userData.last_name}`;
+        document.getElementById('user-username').textContent = `@${userData.username}`;
+        document.getElementById('user-email').textContent = userData.email;
+        document.getElementById('user-first-name').textContent = userData.first_name;
+        document.getElementById('user-last-name').textContent = userData.last_name;
+        
+        // Generate initials for the profile picture
+        const initials = `${userData.first_name.charAt(0)}${userData.last_name.charAt(0)}`;
+        document.getElementById('initials').textContent = initials;
+
+        // Populate recent activity log
+        const activityLogList = document.getElementById('activity-log');
+        recentActivities.forEach(activity => {
+            const li = document.createElement('li');
+            li.className = 'flex items-center space-x-2 text-sm';
+            li.innerHTML = `
+                <i class="fas fa-running text-indigo-500"></i>
+                <span>${activity.title} - ${activity.duration} mins</span>
+            `;
+            activityLogList.appendChild(li);
+        });
+
+    </script>
+</body>
+</html>

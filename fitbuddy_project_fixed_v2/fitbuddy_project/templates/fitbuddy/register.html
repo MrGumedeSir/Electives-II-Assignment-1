@@ -1,0 +1,58 @@
+{% extends 'fitbuddy/base.html' %}
+{% load static %}
+
+{% block title %}Register - FitBuddy{% endblock %}
+
+<!-- 
+* This file provides the user registration page for the FitBuddy application.
+* It extends `base.html` to inherit the main layout and styling.
+* The content within the `{% block content %}` tags is a user-friendly registration form.
+-->
+{% block content %}
+    <!-- Main container for the registration form, centered on the page -->
+    <div class="flex items-center justify-center min-h-screen">
+        <!-- Registration Card with a subtle shadow and rounded corners -->
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <h1 class="text-3xl font-bold text-center text-gray-900 mb-2">Join FitBuddy</h1>
+            <p class="text-center text-gray-600 mb-8">Create your account to start your fitness journey.</p>
+
+            <!-- Registration Form -->
+            <form method="post" action="{% url 'fitbuddy:register' %}" aria-labelledby="register-heading" class="space-y-6">
+                {% csrf_token %}
+                <fieldset class="space-y-4">
+                    <legend class="sr-only" id="register-heading">Registration Form</legend>
+                    
+                    <!-- Form fields from Django form -->
+                    {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium mb-1">{{ field.label }}</label>
+                        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"
+                               {% if field.field.required %}required aria-required="true"{% endif %}
+                               aria-describedby="{{ field.id_for_label }}_helptext">
+                        {% if field.help_text %}
+                            <p id="{{ field.id_for_label }}_helptext" class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p class="text-red-500 text-sm mt-1" role="alert" aria-live="assertive">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </fieldset>
+
+                <!-- Register Button -->
+                <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-indigo-700 transition-colors duration-200" aria-label="Register your account">
+                    Register
+                </button>
+            </form>
+
+            <p class="text-center text-gray-600 text-sm mt-6">
+                Already have an account? <a href="{% url 'fitbuddy:login' %}" class="text-indigo-600 font-medium hover:underline transition-colors duration-200">Log in</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+

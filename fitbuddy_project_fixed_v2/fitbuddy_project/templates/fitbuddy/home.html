@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitBuddy</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+
+    <!-- Header and Navigation -->
+    <header class="w-full max-w-4xl flex items-center justify-between py-6 px-4">
+        <div class="text-3xl font-extrabold text-indigo-600">FitBuddy</div>
+        <nav class="space-x-4 text-gray-700 font-medium">
+            <a href="/login/" class="hover:text-indigo-600 transition">Login</a>
+            <a href="/register/" class="bg-indigo-600 text-white py-2 px-4 rounded-full shadow-md hover:bg-indigo-700 transition">Register</a>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden md:p-8 p-4 mt-6">
+
+        <!-- Hero Section -->
+        <section class="text-center py-12">
+            <h1 class="text-5xl font-extrabold text-gray-900 leading-tight mb-4">
+                Achieve Your Fitness Goals. <br> Together.
+            </h1>
+            <p class="text-lg text-gray-600 max-w-xl mx-auto mb-8">
+                Explore a wide range of activities, book sessions, and track your progress with your personal fitness companion.
+            </p>
+            <a href="/dashboard/" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-full shadow-md text-lg hover:bg-indigo-700 transition transform hover:scale-105">
+                Go to Dashboard
+            </a>
+        </section>
+
+        <!-- Activities Section -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Explore Our Activities</h2>
+            <div id="activities-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Activities will be dynamically loaded here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript to populate the activities grid -->
+    <script>
+        // The __app_id is provided by the canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Placeholder data to simulate Django context
+        // In your Django template, you would use a for-loop with the actual context data.
+        const activities = [
+            { pk: 1, title: 'Group Yoga', description: 'Find your balance and inner peace.' },
+            { pk: 2, title: 'Morning Run', description: 'Start your day with an energizing run.' },
+            { pk: 3, title: 'HIIT Training', description: 'High-intensity interval training for a full-body workout.' },
+            { pk: 4, title: 'Cycling Class', description: 'Spin your way to a stronger heart.' },
+            { pk: 5, title: 'Meditation', description: 'Mindfulness exercises for stress relief.' },
+            { pk: 6, title: 'Pilates', description: 'Improve core strength and flexibility.' }
+        ];
+
+        const grid = document.getElementById('activities-grid');
+        activities.forEach(activity => {
+            const activityCard = document.createElement('div');
+            activityCard.className = 'bg-gray-100 p-6 rounded-xl shadow-lg transform transition duration-300 hover:scale-105 cursor-pointer';
+            
+            activityCard.innerHTML = `
+                <img src="https://placehold.co/400x200/4f46e5/ffffff?text=${encodeURIComponent(activity.title.replace(' ', '+'))}" alt="${activity.title}" class="w-full rounded-lg mb-4 shadow-md">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">${activity.title}</h3>
+                <p class="text-gray-600 mb-4">${activity.description}</p>
+                <a href="/activity/${activity.pk}/" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg text-center inline-block hover:bg-indigo-700 transition">View Details</a>
+            `;
+            grid.appendChild(activityCard);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitBuddy Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+
+    <!-- Main Dashboard Container -->
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden md:p-8 p-4">
+
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row items-center justify-between pb-4 border-b-2 border-gray-200 mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2 md:mb-0">Welcome Back!</h1>
+            <div class="flex items-center space-x-4">
+                <img src="https://placehold.co/60x60/4c51bf/ffffff?text=U" alt="User Profile" class="h-12 w-12 rounded-full shadow-lg border-2 border-indigo-500">
+                <span class="text-lg font-medium text-gray-700">FitBuddy User</span>
+            </div>
+        </header>
+    <div aria-live="polite" aria-atomic="true" id="aria-messages" class="sr-only"></div>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- Confirmed Workouts Section -->
+            <section class="bg-indigo-500 text-white p-6 rounded-xl shadow-lg flex flex-col justify-between transform transition duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold">Confirmed Workouts</h2>
+                    <i class="fas fa-dumbbell text-3xl opacity-75"></i>
+                </div>
+                <div id="workouts-list">
+                    <!-- This section would be populated by Django template logic -->
+                    <p class="text-gray-200">No confirmed workouts this week.</p>
+                </div>
+                <img src="https://placehold.co/200x120/4f46e5/ffffff?text=Workout+Image" alt="Workout" class="mt-4 rounded-lg">
+            </section>
+
+            <!-- Today's Hydration Section -->
+            <section class="bg-blue-500 text-white p-6 rounded-xl shadow-lg flex flex-col justify-between transform transition duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold">Today's Hydration</h2>
+                    <i class="fas fa-tint text-3xl opacity-75"></i>
+                </div>
+                <div id="hydration-display" class="mb-4">
+                    <div class="flex items-center space-x-2">
+                        <!-- Placeholder icons for hydration -->
+                        <i class="fas fa-glass-water-full text-2xl text-white"></i>
+                        <i class="fas fa-glass-water-full text-2xl text-white opacity-50"></i>
+                        <i class="fas fa-glass-water-full text-2xl text-white opacity-50"></i>
+                    </div>
+                </div>
+                <button id="log-water-btn" class="bg-white text-blue-500 font-bold py-2 px-4 rounded-full shadow-md hover:bg-gray-100 transition">
+                    <i class="fas fa-plus mr-2"></i>Add 250ml
+                </button>
+            </section>
+
+            <!-- Log New Activity Section -->
+            <section class="lg:col-span-2 bg-gray-200 p-6 rounded-xl shadow-lg transform transition duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold text-gray-900">Log New Activity</h2>
+                    <i class="fas fa-plus-circle text-3xl text-gray-600"></i>
+                </div>
+                <form id="activity-log-form" class="space-y-4">
+                    <input type="text" name="title" placeholder="Activity Title (e.g., Running)" class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                    <input type="number" name="duration_minutes" placeholder="Duration (minutes)" class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" min="1" required>
+                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition">
+                        <i class="fas fa-arrow-right mr-2"></i>Log Activity
+                    </button>
+                </form>
+            </section>
+
+            <!-- Recent Activity Logs Section -->
+            <section class="bg-gray-800 text-white p-6 rounded-xl shadow-lg lg:col-span-1 transform transition duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold">Recent Activity Logs</h2>
+                    <i class="fas fa-clock-rotate-left text-3xl opacity-75"></i>
+                </div>
+                <ul id="activity-logs-list" class="space-y-2">
+                    <!-- This list would be populated by Django template logic or JS -->
+                    <li class="bg-gray-700 p-3 rounded-lg">No recent activities.</li>
+                </ul>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+        // The __app_id is provided by the canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Event listener for the "Add Water" button
+        document.getElementById('log-water-btn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/log/water/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: 'amount_ml=250'
+                });
+
+                const result = await response.json();
+                if (result.status === 'ok') {
+                    // Visually update the hydration level
+                    let totalHydration = parseInt(document.body.dataset.hydration || '0') + 250;
+                    document.body.dataset.hydration = totalHydration;
+                    updateHydrationDisplay(totalHydration);
+                }
+            } catch (error) {
+                console.error('Error logging water:', error);
+            }
+        });
+
+        // Event listener for the "Log New Activity" form
+        document.getElementById('activity-log-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = new URLSearchParams(formData).toString();
+
+            try {
+                const response = await fetch('/log/activity/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: data
+                });
+
+                const result = await response.json();
+                if (result.status === 'ok') {
+                    // Create a new list item and add it to the recent logs
+                    const newLogItem = document.createElement('li');
+                    newLogItem.className = 'bg-gray-700 p-3 rounded-lg';
+                    newLogItem.innerHTML = `<span class="font-bold">${result.title}</span> for ${result.duration} minutes`;
+                    
+                    const logsList = document.getElementById('activity-logs-list');
+                    logsList.prepend(newLogItem);
+                    // Remove placeholder if it exists
+                    const placeholder = logsList.querySelector('li');
+                    if(placeholder && placeholder.innerText.includes('No recent activities')) {
+                        placeholder.remove();
+                    }
+                    form.reset();
+                }
+            } catch (error) {
+                console.error('Error logging activity:', error);
+            }
+        });
+
+        // Helper function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Helper function to update the hydration display
+        function updateHydrationDisplay(totalMl) {
+            const display = document.getElementById('hydration-display');
+            display.innerHTML = ''; // Clear current display
+            const glasses = Math.floor(totalMl / 250); // Assuming 250ml per glass
+            const maxGlasses = 4; // Display up to 4 glasses
+
+            for (let i = 0; i < maxGlasses; i++) {
+                const icon = document.createElement('i');
+                icon.className = `fas fa-glass-water-full text-2xl text-white ${i < glasses ? '' : 'opacity-50'}`;
+                display.appendChild(icon);
+            }
+            // Add a text display for the exact amount
+            const textDisplay = document.createElement('p');
+            textDisplay.className = 'text-lg mt-2';
+            textDisplay.textContent = `${totalMl} ml logged`;
+            display.appendChild(textDisplay);
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Settings</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+
+    <!-- Main Content Container -->
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden p-8 mt-6">
+
+        <!-- Header -->
+        <header class="pb-6 border-b border-gray-200 text-center">
+            <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
+            <p class="text-gray-600 mt-2">Manage your account and app preferences.</p>
+        </header>
+
+        <!-- Settings Sections -->
+        <div class="mt-8 space-y-8">
+
+            <!-- Account Settings Section -->
+            <section class="bg-gray-50 p-6 rounded-xl shadow-inner">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Account Settings</h2>
+                    <i class="fas fa-user-circle text-2xl text-indigo-600"></i>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-700 font-medium">Change Password</span>
+                        <a href="#" class="text-sm text-indigo-600 hover:text-indigo-500 font-semibold">Update &rarr;</a>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-700 font-medium">Update Profile Information</span>
+                        <a href="/profile/" class="text-sm text-indigo-600 hover:text-indigo-500 font-semibold">Manage &rarr;</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notification Settings Section -->
+            <section class="bg-gray-50 p-6 rounded-xl shadow-inner">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Notification Settings</h2>
+                    <i class="fas fa-bell text-2xl text-indigo-600"></i>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <label for="email-notifications" class="text-gray-700 font-medium cursor-pointer">Email Notifications</label>
+                        <input type="checkbox" id="email-notifications" class="form-checkbox h-5 w-5 text-indigo-600 rounded-full transition duration-150 ease-in-out">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <label for="push-notifications" class="text-gray-700 font-medium cursor-pointer">Push Notifications</label>
+                        <input type="checkbox" id="push-notifications" class="form-checkbox h-5 w-5 text-indigo-600 rounded-full transition duration-150 ease-in-out">
+                    </div>
+                    <a href="/reminders/" class="block text-sm text-indigo-600 hover:text-indigo-500 font-semibold mt-2">Manage Reminders &rarr;</a>
+                </div>
+            </section>
+
+            <!-- Privacy Settings Section -->
+            <section class="bg-gray-50 p-6 rounded-xl shadow-inner">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Privacy</h2>
+                    <i class="fas fa-shield-alt text-2xl text-indigo-600"></i>
+                </div>
+                <div class="space-y-4">
+                    <p class="text-gray-700">Control who can see your activity and profile.</p>
+                    <div class="flex items-center justify-between">
+                        <label for="private-profile" class="text-gray-700 font-medium cursor-pointer">Private Profile</label>
+                        <input type="checkbox" id="private-profile" class="form-checkbox h-5 w-5 text-indigo-600 rounded-full transition duration-150 ease-in-out">
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Placeholder JavaScript for handling changes.
+        // In a real application, you would use event listeners to make AJAX calls to your backend.
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (event) => {
+                console.log(`Setting for ${event.target.id} changed to ${event.target.checked}`);
+                // Here you would send a POST request to update the setting in the database
+            });
+        });
+    </script>
+</body>
+</html>
+# Django settings for a web application with Tailwind CSS and Font Awesome integration. 
